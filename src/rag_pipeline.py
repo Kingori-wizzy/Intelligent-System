@@ -33,13 +33,13 @@ hf_pipeline = pipeline("text2text-generation", model="google/flan-t5-base", toke
 llm = HuggingFacePipeline(pipeline=hf_pipeline)
 
 # Step 5: Interactive Q&A loop
-print("📚 Interactive RAG System Ready! Type your questions below.")
+print(" Interactive RAG System Ready! Type your questions below.")
 print("Type 'exit' to quit.\n")
 
 while True:
     query = input("Q: ")
     if query.lower() == "exit":
-        print("👋 Exiting interactive mode.")
+        print(" Exiting interactive mode.")
         break
 
     # Retrieve relevant docs
