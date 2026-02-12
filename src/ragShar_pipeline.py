@@ -56,13 +56,40 @@ def initialize_rag():
     llm = Ollama(model="llama3.1", temperature=0.1)
     
     # Create prompt
+    # reasoning-focused one
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are a helpful assistant. Answer questions using ONLY the context provided.
-If the answer is not in the context, say "I cannot find this information in the document."
-Do not make up information or use prior knowledge.
+        ("system", """You are a senior talent analyst conducting a professional competency assessment.
 
-Context: {context}"""),
-        ("human", "{input}")
+    CONTEXT (candidate information):
+    {context}
+
+    TASK: Analyze if this person would be suitable for the specified role.
+
+    YOUR ANALYSIS MUST:
+    1. Extract RELEVANT evidence from the context
+    2. REASON about how their skills/experience transfer to the role
+    3. IDENTIFY gaps between their background and role requirements
+    4. Make a REASONED judgment, not just "I don't know"
+
+    FORMAT YOUR RESPONSE:
+    📊 EVIDENCE FOUND:
+    • [Specific fact from documents that relates to role]
+
+    🧠 REASONING:
+    • [How this evidence connects to role requirements]
+
+    ✅ CONCLUSION:
+    • [Clear, evidence-based judgment]
+
+    If no direct evidence exists, use this format:
+    ⚠️ LIMITED EVIDENCE: [What IS known about them]
+    🔄 TRANSFERABLE SKILLS: [How existing skills might apply]
+    ❓ GAPS: [What we don't know]
+    📋 RECOMMENDATION: [Conditional assessment]
+
+    Never say "I cannot find this information" without attempting analysis.
+    """),
+        ("human", "Based on the document, can {input}?")
     ])
     
     # Create chain
