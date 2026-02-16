@@ -10,6 +10,7 @@ from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 
 load_dotenv()
+os.environ['CHROMA_TELEMETRY'] = 'False'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PDF_PATH = os.path.join(BASE_DIR, "data", "Sharleen-about.pdf")  # Updated filename
@@ -103,25 +104,26 @@ def initialize_rag():
     return rag_chain, vector_db
 
 def ask_question(rag_chain, question):
-    """Ask a single question and get answer with sources."""
+    """Ask a question and stream the answer character-by-character."""
     print(f"\n❓ Question: {question}")
-    print("💭 Thinking...")
-    
-    response = rag_chain.invoke({"input": question})
-    
-    print("\n📝 Answer:")
-    print("-" * 40)
-    print(response["answer"])
+    print("💭 Thinking (Streaming mode)...")
     print("-" * 40)
     
-    # Show sources
-    print("\n📚 Sources used:")
-    for i, doc in enumerate(response["context"][:3]):
-        page = doc.metadata.get('page', 'N/A')
-        preview = doc.page_content[:150].replace('\n', ' ') + "..."
-        print(f"   [{i+1}] Page {page}: {preview}")
+    # We use stream() to get chunks of the answer as they are generated
+    full_answer = ""
+    for chunk in rag_chain.stream({"input": question}):
+        # In LangChain's retrieval chain, 'answer' is the key we want to print
+        if "answer" in chunk:
+            content = chunk["answer"]
+            print(content, end="", flush=True) # This prints word-by-word
+            full_answer += content
+
+    print("\n" + "-" * 40)
     
-    return response
+    # After the answer is done, you can still show sources if you want
+    # Note: sources usually come in the first chunk of a retrieval chain
+    return full_answer
+
 
 def interactive_mode(rag_chain):
     """Interactive Q&A session."""
