@@ -26,7 +26,7 @@ def initialize_rag():
         return None
     
     # Load or create vector store
-    embeddings = OllamaEmbeddings(model="llama3.1")
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")
     
     if os.path.exists(DB_DIR):
         print("📂 Loading existing database...")
