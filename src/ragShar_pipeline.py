@@ -54,7 +54,8 @@ def initialize_rag():
         print("✅ Database created and saved!")
     
     # Initialize LLM
-    llm = Ollama(model="llama3.1", temperature=0.1)
+    llm = Ollama(model="llama3.2:1b", temperature=0.1, num_ctx=2048) 
+
     
     # Create prompt
     # reasoning-focused one
